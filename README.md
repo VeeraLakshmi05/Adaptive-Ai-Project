@@ -162,3 +162,8 @@ This project is open-source under the MIT License.
 ❤️ Acknowledgments
 
 This project was built for the 5-Day AI Agents Intensive with Google and demonstrates key concepts like multi-agent workflows, structured output, state management, and LLM-based decision-making.
+
+Sample Output
+
+<img width="1512" height="218" alt="image" src="https://github.com/user-attachments/assets/e83d8859-813a-4ca1-a7b3-c5bbc8506d33" />
+
