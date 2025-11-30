@@ -1,140 +1,164 @@
-from dotenv import load_dotenv
-from typing import Annotated, Literal
-from langgraph.graph import StateGraph, START, END 
-from langgraph.graph.message import add_messages
-from langchain_google_genai import ChatGoogleGenerativeAI
-from pydantic import BaseModel, Field
-from typing_extensions import TypedDict
-import os
-import getpass
+Adaptive Emotional–Logical Conversational Agent
 
-load_dotenv()
+A multi-agent conversational system that intelligently classifies a user’s message as emotional or logical and responds with the appropriate tone. Built using LangGraph, LangChain, and Google Gemini 2.5 Flash, this project demonstrates adaptive AI behavior, multi-agent routing, and structured output workflows.
 
-if "GOOGLE_API_KEY" not in os.environ:
-    os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter your Google AI API key: ")
+📌 Project Summary
 
-MODEL_NAME = "gemini-2.5-flash"
+Human communication requires different response styles. Some messages need empathy, others need facts. Most chatbots respond the same way every time, making them feel robotic or inappropriate.
 
-llm = ChatGoogleGenerativeAI(
-    model=MODEL_NAME, 
-    temperature=0
-)
+This project solves that challenge by creating an agent system that:
 
-class MessageClassifier (BaseModel):
-    message_type: Literal["emotional", "logical"] = Field(
-        ...,
-        description="classify if the user's message requires 'emotional'/'therapist' or 'logical' response"
-    )
+Detects whether a user message is emotional or logical
 
-class State(TypedDict):
-    messages: Annotated[list, add_messages]
-    message_type: str | None
+Routes the message to a specialized agent
 
-graph_builder = StateGraph(State)
+Generates responses that match user intent
 
-def classify_message(state: State):
-    last_message = state["messages"][-1]
-    classifier_llm = llm.with_structured_output(MessageClassifier)
-    result = classifier_llm.invoke([
-        {
-            "role": "system",
-            "content": """Classify the user message as either:
-            - 'emotional': if it asks for emotional support, therapy, deals with feelings, or personal problems
-            - 'logical': if it asks for facts, information, logical analysis, or practical solutions
-            """
-        },
-        {"role": "user", "content": last_message.content}
-    ])
-    return {
-        "message_type": result.message_type
-    }
+Uses a graph-based architecture for clean, modular design
 
-def therapist_agent(state: State):
-    last_message = state["messages"][-1]
+This project was built as part of the AI Agents Intensive Capstone Project.
 
-    messages = [
-        {"role": "system",
-         "content": """You are a compassionate therapist. Focus on the emotional aspects of the user's message.
-                        Show empathy, validate their feelings, and help them process their emotions.
-                        Ask thoughtful questions to help them explore their feelings more deeply.
-                        Avoid giving logical solutions unless explicitly asked."""
-         },
-        {
-            "role": "user",
-            "content": last_message.content
-        }
-    ]
-    reply = llm.invoke(messages)
-    return {"messages": [{"role": "assistant", "content": reply.content}]}
+🧠 Key Features
 
-def logical_agent(state: State):
-    last_message = state["messages"][-1]
+Message Type Classification: Identifies emotional vs. logical messages using structured LLM output
 
-    messages = [
-        {"role": "system",
-         "content": """You are a purely logical assistant. Focus only on facts and information.
-            Provide clear, concise answers based on logic and evidence.
-            Do not address emotions or provide emotional support.
-            Be direct and straightforward in your responses."""
-         },
-        {
-            "role": "user",
-            "content": last_message.content
-        }
-    ]
-    reply = llm.invoke(messages)
-    return {"messages": [{"role": "assistant", "content": reply.content}]}
+Multi-Agent System:
 
-def router(state: State):
-    message_type = state.get("message_type", "logical")
-    if message_type == "emotional":
-        return {
-            "next": "therapist"
-        }
-    else:
-        return {
-            "next": "logical"
-        }
+Message Classifier Agent
 
+Therapist Agent (emotional responses)
 
-graph_builder.add_node("classify", classify_message)
-graph_builder.add_node("therapist", therapist_agent)
-graph_builder.add_node("logical", logical_agent)
-graph_builder.add_node("router", router)
+Logical Agent (factual responses)
 
-graph_builder.add_edge(START, "classify")
-graph_builder.add_edge("classify", "router")
+Dynamic Routing: LangGraph chooses the correct agent at runtime
 
-graph_builder.add_conditional_edges(
-    "router",
-    lambda state: state["next"],
-    {"therapist": "therapist", "logical": "logical"}
-)
+State Management: Maintains conversation history
 
-graph_builder.add_edge("therapist", END)
-graph_builder.add_edge("logical", END)
+Modular, Extendable Architecture
 
-graph = graph_builder.compile()
+Continuous Chat Loop for real-time conversation
 
-def run_chat():
-    state: State = {
-        "messages": [],
-        "message_type": None
-    }
+🏗️ Architecture Overview
+1. Message Classifier
 
-    while True:
-        user_input = input("User: ")
-        if user_input.lower() in ["exit", "quit"]:
-            break
+Uses the LLM with Pydantic structured output to categorize messages as "emotional" or "logical".
 
-        state["messages"].append({"role": "user", "content": user_input})
+2. Router Node
 
-        state = graph.invoke(state)
+Reads classification result and forwards the message to the correct agent.
 
-        if state.get("messages") and len(state["messages"]) > 0:
-            last_message = state["messages"][-1]
-            print("Assistant:", last_message.content)
+3. Therapist Agent
+
+Provides:
+
+Empathy
+
+Validation
+
+Supportive conversational tone
+
+4. Logical Agent
+
+Provides:
+
+Fact-based answers
+
+Clear explanations
+
+No emotional tone
+
+5. StateGraph
+
+Controls the workflow:
+
+START → Classify → Router → Therapist/Logical → END
+
+📁 Project Structure
+.
+├── adaptive_chatbot.ipynb   # Jupyter Notebook version
+├── main.py                  # Python script version of the chatbot
+├── README.md                # Documentation
+├── requirements.txt         # Dependency list
+└── assets/                  # (Optional) images or thumbnails
+
+⚙️ Installation & Setup
+1. Clone the repository
+git clone https://github.com/yourusername/emotional-logical-agent.git
+cd emotional-logical-agent
+
+2. Install dependencies
+pip install -r requirements.txt
+
+3. Add your Google API Key
+
+Create a .env file in the root directory:
+
+GOOGLE_API_KEY=your_key_here
+
+4. Run the application
+python main.py
 
 
-if __name__ == "__main__":
-    run_chat()
+or open the Jupyter Notebook:
+
+jupyter notebook adaptive_chatbot.ipynb
+
+▶️ How It Works (Demo Flow)
+
+User enters a message
+
+The classifier analyzes it
+
+The router selects the appropriate agent
+
+The agent generates a response
+
+Output is displayed in the console
+
+The cycle continues until the user exits
+
+Example:
+
+User: I feel stressed about exams.
+Assistant (Therapist): I'm sorry you're feeling stressed...
+
+User: What is the capital of Japan?
+Assistant (Logical): The capital of Japan is Tokyo.
+
+🛠️ Tech Stack
+
+Python 3.x
+
+LangGraph
+
+LangChain
+
+Google Gemini 2.5 Flash
+
+Pydantic
+
+dotenv
+
+🔮 Future Enhancements
+
+Multi-emotion classification (sad, angry, confused, stressed)
+
+Sentiment scoring
+
+Memory for long-term personal context
+
+Voice support (speech-to-text, TTS)
+
+Web-based UI using Streamlit/React
+
+Deployment on Google Cloud Run / Vertex AI Agent Engine
+
+Logging, tracing, and observability tools
+
+📜 License
+
+This project is open-source under the MIT License.
+
+❤️ Acknowledgments
+
+This project was built for the 5-Day AI Agents Intensive with Google and demonstrates key concepts like multi-agent workflows, structured output, state management, and LLM-based decision-making.
