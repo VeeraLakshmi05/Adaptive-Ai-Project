@@ -170,4 +170,3 @@ Sample Output
 
 <img width="1512" height="218" alt="image" src="output1.png" />
 <img width="1512" height="218" alt="image" src="output2.png" />
-<img width="1512" height="218" alt="image" src="output3.png" />
