@@ -1,137 +1,139 @@
-Adaptive Emotional–Logical Conversational Agent
+🌟 Adaptive Emotional–Logical Conversational Agent
 
-A multi-agent conversational system that intelligently classifies a user’s message as emotional or logical and responds with the appropriate tone. Built using LangGraph, LangChain, and Google Gemini 2.5 Flash, this project demonstrates adaptive AI behavior, multi-agent routing, and structured output workflows.
+A context-aware multi-agent chatbot using LangGraph, LangChain, and Google Gemini.
 
-📌 Project Summary
+🧠 Overview
 
-Human communication requires different response styles. Some messages need empathy, others need facts. Most chatbots respond the same way every time, making them feel robotic or inappropriate.
+This project implements an Adaptive Conversational AI Agent that automatically detects whether a user message is emotional or logical, routes it to the appropriate agent, and generates context-aware responses.
 
-This project solves that challenge by creating an agent system that:
+The system uses:
 
-Detects whether a user message is emotional or logical
+🟦 Message Classifier Agent
 
-Routes the message to a specialized agent
+🟩 Therapist Agent (empathetic responses)
 
-Generates responses that match user intent
+🟧 Logical Agent (factual, step-by-step solutions)
 
-Uses a graph-based architecture for clean, modular design
+🟥 Dynamic Routing via LangGraph
 
-This project was built as part of the AI Agents Intensive Capstone Project.
+🟪 Structured Output Models for consistent classification
 
-🧠 Key Features
+🟫 State Management for long conversations
 
-Message Type Classification: Identifies emotional vs. logical messages using structured LLM output
+It also supports solution count extraction—if a user asks for 1 to 10 solutions, the bot generates exactly that many.
 
-Multi-Agent System:
+✨ Features
+🤖 Intelligent Message Classification
 
-Message Classifier Agent
+Classifies messages as:
 
-Therapist Agent (emotional responses)
+Emotional → Needs empathy
 
-Logical Agent (factual responses)
+Logical → Needs clear facts or solutions
 
-Dynamic Routing: LangGraph chooses the correct agent at runtime
+🔄 Multi-Agent Architecture
 
-State Management: Maintains conversation history
+Classifier Agent → decides intent
 
-Modular, Extendable Architecture
+Therapist Agent → emotional support
 
-Continuous Chat Loop for real-time conversation
+Logical Agent → problem-solving
 
-🏗️ Architecture Overview
-1. Message Classifier
+🔍 Solution Count Extraction (1–10)
 
-Uses the LLM with Pydantic structured output to categorize messages as "emotional" or "logical".
+Bot detects:
 
-2. Router Node
+“Give me 1 solution” → 1
 
-Reads classification result and forwards the message to the correct agent.
+“Give me many solutions” → 6
 
-3. Therapist Agent
+“I need 5 solutions” → 5
 
-Provides:
+“Give me some solutions” → 4
 
-Empathy
+🔁 Continuous Conversation Loop
 
-Validation
+Chat runs until the user types exit or quit.
 
-Supportive conversational tone
+🧠 Context Memory
 
-4. Logical Agent
+Reads full conversation history for accurate replies.
 
-Provides:
+🧱 Modular Graph-Based Design
 
-Fact-based answers
-
-Clear explanations
-
-No emotional tone
-
-5. StateGraph
-
-Controls the workflow:
+Routing handled through:
 
 START → Classify → Router → Therapist/Logical → END
 
+🏗️ Architecture Diagram
+User Message
+      │
+      ▼
+ Message Classifier ──→ Detects emotional/logical + solution_count
+      │
+      ▼
+    Router
+   /      \
+  ▼        ▼
+Therapist  Logical
+ Agent      Agent
+      \    /
+       ▼  ▼
+      Response
+
 📁 Project Structure
 .
-├── adaptive_chatbot.ipynb   # Jupyter Notebook version
-├── main.py                  # Python script version of the chatbot
-├── README.md                # Documentation
-├── requirements.txt         # Dependency list
-└── assets/                  # (Optional) images or thumbnails
+├── main.py                     # Main Python script
+├── adaptive_chatbot.ipynb      # Notebook version
+├── README.md                   # Documentation
+├── requirements.txt            # Dependencies
+└── assets/                     # Images (optional)
 
-⚙️ Installation & Setup
-1. Clone the repository
+🚀 Installation & Setup
+1. Clone this repository
 git clone https://github.com/yourusername/emotional-logical-agent.git
 cd emotional-logical-agent
 
-2. Install dependencies
+2. Install requirements
 pip install -r requirements.txt
 
-3. Add your Google API Key
+3. Add your API key
 
-Create a .env file in the root directory:
+Create a .env file:
 
-GOOGLE_API_KEY=your_key_here
+GOOGLE_API_KEY=your_api_key_here
 
-4. Run the application
+4. Run the app
 python main.py
 
 
-or open the Jupyter Notebook:
+Or open the notebook:
 
 jupyter notebook adaptive_chatbot.ipynb
 
-▶️ How It Works (Demo Flow)
+▶️ Example Usage
+Emotional Input
+User: I'm feeling stressed.
+Assistant: I'm really sorry you're feeling that way...
 
-User enters a message
-
-The classifier analyzes it
-
-The router selects the appropriate agent
-
-The agent generates a response
-
-Output is displayed in the console
-
-The cycle continues until the user exits
-
-Example:
-
-User: I feel stressed about exams.
-Assistant (Therapist): I'm sorry you're feeling stressed...
-
+Logical Input
 User: What is the capital of Japan?
-Assistant (Logical): The capital of Japan is Tokyo.
+Assistant: The capital of Japan is Tokyo.
 
-🛠️ Tech Stack
+Solution Count Input
+User: Give me 3 solutions to reduce stress.
+Assistant:
+1. Try breathing exercises...
+2. Break your tasks into smaller steps...
+3. Take a short walk...
+
+🛠️ Technologies Used
 
 Python 3.x
 
-LangGraph
-
 LangChain
+
+LangGraph
 
 Google Gemini 2.5 Flash
 
@@ -141,29 +143,30 @@ dotenv
 
 🔮 Future Enhancements
 
-Multi-emotion classification (sad, angry, confused, stressed)
+Multi-emotion detection (sad, angry, confused)
 
 Sentiment scoring
 
-Memory for long-term personal context
+Long-term personalized memory
 
-Voice support (speech-to-text, TTS)
+Voice support (speech-to-text + TTS)
 
-Web-based UI using Streamlit/React
+Streamlit or React web UI
 
-Deployment on Google Cloud Run / Vertex AI Agent Engine
+Deployment to Google Cloud Run / Vertex AI
 
-Logging, tracing, and observability tools
+Logging and monitoring
 
 📜 License
 
-This project is open-source under the MIT License.
+This project is licensed under the MIT License.
 
 ❤️ Acknowledgments
 
-This project was built for the 5-Day AI Agents Intensive with Google and demonstrates key concepts like multi-agent workflows, structured output, state management, and LLM-based decision-making.
+Developed as part of the AI Agents Intensive Capstone Project.
+Demonstrates core concepts including multi-agent workflows, structured output, contextual reasoning, and adaptive conversation design.
 
 Sample Output
 
-<img width="1512" height="218" alt="image" src="https://github.com/user-attachments/assets/e83d8859-813a-4ca1-a7b3-c5bbc8506d33" />
-
+<img width="1512" height="218" alt="image" src="" />
+<img width="1512" height="218" alt="image" src="" />
