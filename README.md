@@ -168,5 +168,5 @@ Demonstrates core concepts including multi-agent workflows, structured output, c
 
 Sample Output
 
-<img width="1512" height="218" alt="image" src="" />
-<img width="1512" height="218" alt="image" src="" />
+<img width="1512" height="218" alt="image" src="output1.png" />
+<img width="1512" height="218" alt="image" src="output2.png" />
